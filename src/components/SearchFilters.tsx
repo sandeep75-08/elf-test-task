@@ -1,16 +1,8 @@
-import React, { useState, useEffect } from "react";
-import {
-  Search,
-  MapPin,
-  Filter,
-  X,
-  Loader2,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
-import { FilterState } from "../types/brewery";
-import { getCurrentLocation } from "../utils/geolocation";
-import { useBrewerySearch } from "../hooks/useBreweries";
+import React, { useState, useEffect } from 'react';
+import { Search, MapPin, Filter, X, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { FilterState } from '../types/brewery';
+import { getCurrentLocation } from '../utils/geolocation';
+import { useBrewerySearch } from '../hooks/useBreweries';
 
 interface SearchFiltersProps {
   filters: FilterState;
@@ -18,30 +10,30 @@ interface SearchFiltersProps {
   className?: string;
 }
 
+const DISTANCES = [25, 50, 100]
+
 export const SearchFilters: React.FC<SearchFiltersProps> = ({
   filters,
   onFiltersChange,
-  className = "",
+  className = ''
 }) => {
-  const [ShowSuggestions, setShowSuggestions] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [gettingLocation, setGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
-
-  const { data: suggestions = [], isLoading: loadingSuggestions } =
-    useBrewerySearch(filters.search);
+  
+  const { data: suggestions = [], isLoading: loadingSuggestions } = useBrewerySearch(filters.search);
 
   const handleLocationRequest = async () => {
     setGettingLocation(true);
     setLocationError(null);
-
+    
     try {
-      console.log("Requesting location...");
+      console.log('Requesting location...');
       const location = await getCurrentLocation();
       onFiltersChange({ ...filters, userLocation: location });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to get location";
-      console.error("Location error:", errorMessage);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to get location';
+      console.error('Location error:', errorMessage);
       setLocationError(errorMessage);
     } finally {
       setGettingLocation(false);
@@ -55,30 +47,25 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
 
   const clearFilters = () => {
     onFiltersChange({
-      search: "",
-      city: "",
-      state: "",
+      search: '',
+      city: '',
+      state: '',
       distance: null,
-      userLocation: null,
+      userLocation: null
     });
     setLocationError(null);
   };
 
-  const hasActiveFilters =
-    filters.search || filters.city || filters.state || filters.distance;
+  const hasActiveFilters = filters.search || filters.city || filters.state || filters.distance;
 
   useEffect(() => {
     const handleClickOutside = () => setShowSuggestions(false);
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  useEffect(() => {}, []);
-
   return (
-    <div
-      className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 ${className}`}
-    >
+    <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 ${className}`}>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-900 flex items-center">
           <Filter className="w-5 h-5 mr-2 text-amber-600" />
@@ -115,9 +102,9 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
               <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 animate-spin" />
             )}
           </div>
-
+          
           {/* Search Suggestions */}
-          {ShowSuggestions && suggestions.length > 0 && (
+          {showSuggestions && suggestions.length > 0 && (
             <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {suggestions.map((brewery) => (
                 <button
@@ -125,12 +112,8 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
                   onClick={() => handleSuggestionClick(brewery.name)}
                   className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
                 >
-                  <div className="font-medium text-gray-900">
-                    {brewery.name}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {brewery.city}, {brewery.state}
-                  </div>
+                  <div className="font-medium text-gray-900">{brewery.name}</div>
+                  <div className="text-sm text-gray-500">{brewery.city}, {brewery.state}</div>
                 </button>
               ))}
             </div>
@@ -143,18 +126,14 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
             type="text"
             placeholder="Filter by city"
             value={filters.city}
-            onChange={(e) =>
-              onFiltersChange({ ...filters, city: e.target.value })
-            }
+            onChange={(e) => onFiltersChange({ ...filters, city: e.target.value })}
             className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
           />
           <input
             type="text"
             placeholder="Filter by state"
             value={filters.state}
-            onChange={(e) =>
-              onFiltersChange({ ...filters, state: e.target.value })
-            }
+            onChange={(e) => onFiltersChange({ ...filters, state: e.target.value })}
             className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
           />
         </div>
@@ -162,9 +141,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
         {/* Distance Filter */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-gray-700">
-              Filter by Distance
-            </label>
+            <label className="text-sm font-medium text-gray-700">Filter by Distance</label>
             {!filters.userLocation && (
               <button
                 onClick={handleLocationRequest}
@@ -176,11 +153,11 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
                 ) : (
                   <MapPin className="w-4 h-4 mr-1" />
                 )}
-                {gettingLocation ? "Getting Location..." : "Enable Location"}
+                {gettingLocation ? 'Getting Location...' : 'Enable Location'}
               </button>
             )}
           </div>
-
+          
           {locationError && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
               <div className="flex items-start space-x-2">
@@ -197,47 +174,44 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
               </div>
             </div>
           )}
-
+          
           {filters.userLocation && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-3">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4 text-green-600" />
                 <span className="text-sm text-green-700">
-                  Location enabled ({filters.userLocation.latitude.toFixed(4)},{" "}
-                  {filters.userLocation.longitude.toFixed(4)})
+                  Location enabled ({filters.userLocation.latitude.toFixed(4)}, {filters.userLocation.longitude.toFixed(4)})
                 </span>
               </div>
             </div>
           )}
-
+          
           <div className="grid grid-cols-3 gap-2">
-            {[25, 50, 100].map((distance) => (
+            {DISTANCES.map((distance) => (
               <button
                 key={distance}
-                onClick={() =>
-                  onFiltersChange({
-                    ...filters,
-                    distance: filters.distance === distance ? null : distance,
-                  })
-                }
+                onClick={() => onFiltersChange({ 
+                  ...filters, 
+                  distance: filters.distance === distance ? null : distance 
+                })}
                 disabled={!filters.userLocation}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   filters.distance === distance
-                    ? "bg-amber-600 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? 'bg-amber-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 {distance} mi
               </button>
             ))}
           </div>
-
+          
           {!filters.userLocation && (
             <p className="text-xs text-gray-500">
               Enable location to filter breweries by distance
             </p>
           )}
-
+          
           {filters.distance && filters.userLocation && (
             <p className="text-xs text-blue-600">
               Showing breweries within {filters.distance} miles of your location
