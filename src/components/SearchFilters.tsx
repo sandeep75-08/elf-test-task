@@ -25,7 +25,8 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
 
   const handleLocationRequest = async () => {
     setGettingLocation(true);
-    setLocationError(null);
+    setLocationError([]);
+    // setLo
     
     try {
       console.log('Requesting location...');
