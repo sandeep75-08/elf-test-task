@@ -31,6 +31,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
     try {
       console.log('Requesting location...');
       const location = await getCurrentLocation();
+      const a = 10;
       onFiltersChange({ ...filters, userLocation: location });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to get location';
@@ -42,6 +43,8 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
   };
 
   const handleSuggestionClick = (breweryName: string) => {
+    console.log(a);
+    
     onFiltersChange({ ...filters, search: breweryName });
     setShowSuggestions(false);
   };
